@@ -34,7 +34,30 @@ void finishBanner(struct timeval *timeStarted, State *state)
            timeElapsed);
 }
 
-Result testNumber(State *state, const double expected, const double actual, const char *message)
+Result testLong(State *state, const long long expected, const long long actual, const char *message)
+{
+    Result result = ERROR;
+
+    state->tests += 1;
+    if (expected == actual)
+    {
+        result = OK;
+    }
+    else
+    {
+        result = FAILED;
+        state->failures += 1;
+    }
+
+    if (result != OK)
+    {
+        printf("%s Expected: %lld Actual: %lld\n", message, expected, actual);
+    }
+
+    return result;
+}
+
+Result testDouble(State *state, const double expected, const double actual, const char *message)
 {
     Result result = ERROR;
 
@@ -59,15 +82,18 @@ Result testNumber(State *state, const double expected, const double actual, cons
 
 void testSuite1(State *state)
 {       
-    testNumber(state, 4, 3, "4 is not 3");
-    testNumber(state, 4, 4, "4 is 4");
+    testLong(state, 4, 3, "4 is not 3");
+    testLong(state, 4, 4, "4 is 4");
+
+    testDouble(state, 4.000001, 4.0, "4 is not 3");
+    testDouble(state, 4.000001, 4.000001, "4 is 4");
 
     struct timeval start, finish;
     start.tv_sec = 2;
     start.tv_usec = 0;
     finish.tv_sec = 3;
     finish.tv_usec = 234567;
-    testNumber(state, 1.234567, getTimeDiffInSeconds(&start, &finish), "getTimeDiffInSeconds failed.");
+    testDouble(state, 1.234567, getTimeDiffInSeconds(&start, &finish), "getTimeDiffInSeconds failed.");
 }
 
 int main()
